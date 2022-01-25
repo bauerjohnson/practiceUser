@@ -1,0 +1,391 @@
+89 => ADDING A USER COMPONENT
+new - component - UI F and USERS F
+
+USERS F => AddUser.js
+
+in AddUser
+
+const AddUser = props => {
+      const addUserHandler = (event) => {
+          event.preventDefault();
+      }
+    return (
+    <form onSubmit={addUserHandler()}>
+    <label html for='username'></label>
+   <input id = 'username' type = 'text'/>
+
+     <label html for= "age">age(years)</label>
+    <input id = "age" type='number'/>
+    <button type='submit'></button>
+    </form>
+    )
+}
+
+in app.js
+
+import AddUser from './AddUser'
+
+function App() {
+  return (
+    <div>
+<AddUser/>
+    </div>
+  );
+}
+
+IN INDEX.CSS
+html {
+    font-family : san-serif;
+    background : black
+}
+
+90 : ADDING A RE-USABLE 'CARD' COMPONENT
+
+IN UI - Card.js, Card.module.css
+
+in Card.js
+
+import classes from './Card.module.css';
+
+const Card = props => {
+    return <div className={classes.card}>
+    {props.children}
+      </div>
+}
+
+in Card.module.css
+
+.card {
+    background : white;
+    box-shadow : 0 2px 8px rgba(0, 0, 0.26);
+    border-radius : 10px;
+}
+
+in AddUser.js
+
+import card from '../Card'
+import classes from './AddUser.CSS'
+
+return (
+    <Card className = {classes.input}>
+
+    </Card>
+)
+
+in AddUser.css - new
+
+.input {
+  margin: 2rem auto;
+  padding: 1rem;
+  width: 90%;
+  max-width: 40rem;
+}
+
+.input label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.input input {
+  font: inherit;
+  display: block;
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+ 
+.input input:focus {
+  outline: none;
+  border-color: #4f005f;
+}
+
+since we are using className on our card, to accept it, in 
+the card.js, because card is jst like any any other component , need to accept 
+what we are using on it using props because it doesnt know whats use on it
+
+i.e
+
+<card className = {}>
+
+so then in card.js , we need to accept it doing , doing the below
+
+const Card = props => {
+    return <div className={`${classes.card} ${props.className}`}>
+    {props.children}</div>
+}
+
+91 => ADDING A REUSABLE BUTTON COMPONENT
+UI->new - Button.js, Button.module.js, AddUser.js
+
+in Button.js
+
+import React from 'react';
+
+import classes from './Button.module.css';
+
+const Button = (props) => {
+  return (
+    <button className = {classes.button}
+     type = {props.type || 'button'} //jst like the card.js, but we use 'or' here, the 'button' is ordinary incase type is not set
+     onClick = {props.onClick}>
+     {props.children}
+    </Button>
+  )
+}
+
+export default Button;
+
+in AddUser.js
+
+import Button from ./Button
+
+<button type='submit'></button> 
+
+is now
+
+<Button type='submit'>Add User</Button>
+
+
+92 =>MANAGING THE USER INPUT STATE
+
+AddUser.js
+
+in AddUser.js
+
+import React, {useState} from 'react'
+
+const AddUser = (props) => {
+const [enteredUsername, setEnteredUsername] = useState('');
+
+const [enteredAge, setEnteredAge] = useState('');
+
+}
+
+const addUserHandler = (event) => {
+  event.preventDefault(); old
+  console.log(enteredUsername, enteredAge)
+
+}
+
+const usernameChangeHandler = (event) => {
+ setEnteredUsername(event.target.value)
+};
+
+const ageChangeHandler = (event) => {
+ setEnteredAge(event.target.value)
+};
+
+
+
+ <input id = 'username' type = 'text' onChange = {usernameChangeHandler}/>
+
+  <input id = "age" type='number' onChange = {ageChangeHandler}/>
+
+jst listening to input and showing it in log
+
+  93 => ADDING validation n resetting logic
+
+ in AddUser.js 
+
+   const addUserHandler = (event) => {
+         event.preventDefault();
+         console.log(enteredUsername, enteredAge);
+         setEnteredUsername('')
+         setEnteredAge('')
+    }
+
+
+ <input id = 'username' type = 'text' value={enteredUsername} onChange = {usernameChangeHandler}/>
+
+<input id = "age" type='number' value={enteredAge} onChange = {ageChangeHandler}/>
+
+this now clear the input slot after we click the button
+
+now for the validation
+
+ const addUserHandler = (event) => {
+         event.preventDefault();
+         if(enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+           return;
+         }
+         if(+enteredAge < 1) {    //the + ensures its a number and not a string, becos javascript returns string(so with the + , we force a conversion , thereby converting it to a number)
+           return;
+         }
+         console.log(enteredUsername, enteredAge);
+         setEnteredUsername('')
+         setEnteredAge('')
+    }
+
+  94 => ADDING A USERS LIST COMPONENT
+
+  Users-> new -> UserList.js, app.js
+
+  in UserList.JS
+import Card from ui/card
+
+  const UserList = props => {
+    return (
+      <Card className = {classes.users}>
+      <ul>
+      {props.users.map((user) => {
+        <li>
+       
+        {user.name} ({user.age} years old)
+        </li>
+      })}
+      </ul>
+    )
+    </Card>
+  }
+
+
+UserList.module.css attah to lecture
+
+in app.js
+
+return (
+  <div>
+  <AddUser/>
+  <UserList users={[]}/>
+  </div>
+)
+
+
+95 => MANAGING A LIST OF USERS VIA STATE
+
+
+in app.js
+
+import React, {useState} from 'react';
+
+
+function App () {
+  const [userList, setUsersList] = useState([]);
+
+  const addUserHandler = (uName, uAge) => {
+    setUsersList((prevUsersList) => {
+      return[...prevUsersList, {name : uName, age : uAge,id : Math.random().toString() }];
+    })
+  }
+}
+
+return (
+  <div>
+  <AddUser onAddUsers = {addUserHandler}/>
+  <UserList users={[userList]}/>
+  </div>
+)
+
+we will now execute it as a function in the AddUser.js
+
+        props.onAddUsers(enteredUsername, enteredAge);
+         setEnteredUsername('')
+         setEnteredAge('')
+
+
+in UserList.js
+
+  <li key = {user.id}>
+        {user.name} ({user.age} years old)
+        </li>
+      })}
+
+
+96 => ADDING THE ERRORMODAL COMPONENT  
+
+NEW -> ErrorModal.js
+
+in ErrorModal.js
+
+import Card from '/card'
+import Button from './Button'
+
+
+const ErrorModal = props => {
+    return 
+    <Card className = {classes.modal}>
+        <header className = {classes.header}>
+        <h2>{props.title}</h2>
+        </header>
+        <div className = {classes.content}>
+        <p>{props.message}</p>
+        </div>
+        <footer className = {classes.actions}>
+        <Button>okay</Button>
+        </footer>
+</Card>
+    
+}
+
+ErrorModal.css attach to vid
+
+in AddUser.js
+
+import ErrorModal FROM 
+
+return (
+    <div>
+    <ErrorModal title='An error occured' message='something went wrong' />
+    <Card className = {classes.input}>
+    <div>
+)
+
+in ErrorModal.js
+<div className = {classes.backdrop} /> new
+<Card className= {classes.modal}>
+<header className={classes.header}>
+
+97 => MANAGINGTHE ERROR STATE
+
+ AddUser.js
+
+in AddUser.js 
+
+const AddUser = (props) => {
+  const [enteredUsername, setEnteredUsername] = useState('');
+  const [enteredAge, setEnteredAge] = useState('');
+  const [error, setError] = useState('');
+
+  const addUserHandler = (event) => {
+    event.preventDefault();
+    if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+      setError({
+        title : 'Invalid input',
+        message : 'Please enter a valid name and age (non-empty values).'
+      })
+      return; if we have a empty submit input, we jst return
+    }
+ if (+enteredAge < 1) {
+ 
+      setError({
+        title : 'Invalid input',
+        message : 'Please enter a valid age (> 0).'
+   
+   })
+      return;
+    }
+
+    return (
+      <div>
+      {error && <ErrorModal 
+      title={error.title}
+       message={error.message}
+       onConfirm={errorHandler}
+       />}
+      //this jst check if error is a thing , then ErrorModal else  error is undefined then nothing is rendered
+    )
+
+    to dismiss the error message from the screen
+
+    still in AddUser.js
+
+    const errorhandler = () => {
+      setError(null);
+    } 
+
+    in ErrorModal.JS
+    <div className={classes.backdrop} onClick={props.onConfirm} />
+
+     <Button onClick={props.onConfirm}>okay</Button>

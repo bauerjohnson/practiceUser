@@ -1,0 +1,12 @@
+1. component F => UI F and user F
+89. user F => Adduser.js and css -form 
+90. adduser to app.js and index.css(font family n background)
+90. UI F => card.js({`${}`}) and css also using card in adduser.js
+91. button.js(or) and css
+92. using state and event onChange in adduser.js
+93. resetting logic(value = enteredUsername to input and  'setenterdusername' to form submithandler) and validation(trim and +enteredage < 1)
+94. user.js and user.css => mapping into list item here and in app.js <userlist users = {[]}/>
+95. using state and function in app.js to accept the adduser input and using userList
+96. creating errormodal.js(new), importing it in adduser.js and <ErrorModal title='An error occured' message='something went wrong' />
+97. import error in adduser.js, create usestate to display error conditionally using &&
+97. using backdrop in error.js and for 'okay' in error module to set rendered module to null
